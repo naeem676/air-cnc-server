@@ -26,23 +26,13 @@ app.use(express.static('experience'))
 app.use(fileUpload());
 
 
-const calculateOrderAmount = items => {
-  // Replace this constant with a calculation of the order's amount
-  // Calculate the order total on the server to prevent
-  // people from directly manipulating the amount on the client
-  return 1400;
-};
-app.post("/create-payment-intent", async (req, res) => {
-  const { items } = req.body;
-  // Create a PaymentIntent with the order amount and currency
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: calculateOrderAmount(items),
-    currency: "usd"
-  });
-  res.send({
-    clientSecret: paymentIntent.client_secret
-  });
-});
+// const calculateOrderAmount = items => {
+//   // Replace this constant with a calculation of the order's amount
+//   // Calculate the order total on the server to prevent
+//   // people from directly manipulating the amount on the client
+//   return 1400;
+// };
+
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.6i5ol.mongodb.net/aircnc?retryWrites=true&w=majority`;
@@ -133,6 +123,8 @@ client.connect(err => {
     })
   })
 
+  
+
   // find all experience and show client side
   app.get('/findExperience', (req, res)=>{
     experienceCollection.find({})
@@ -181,6 +173,18 @@ client.connect(err => {
  })
 
 
+});
+app.post("/create-payment-intent", async (req, res) => {
+  const { total } = req.body;
+  // console.log(total)
+  // Create a PaymentIntent with the order amount and currency
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: total,
+    currency: "usd"
+  });
+  res.send({
+    clientSecret: paymentIntent.client_secret
+  });
 });
 
 
